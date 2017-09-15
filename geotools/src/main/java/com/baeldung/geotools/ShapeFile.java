@@ -41,9 +41,9 @@ public class ShapeFile {
 
         SimpleFeatureType CITY = createFeatureType();
 
-        SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder(CITY);
+        //SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder(CITY);
 
-        addLocations(featureBuilder, collection);
+        addLocations(CITY, collection);
 
         File shapeFile = getNewShapeFile();
 
@@ -72,7 +72,7 @@ public class ShapeFile {
         return CITY;
     }
 
-    public static void addLocations(SimpleFeatureBuilder featureBuilder, DefaultFeatureCollection collection) {
+    public static void addLocations(SimpleFeatureType CITY, DefaultFeatureCollection collection) {
 
         Map<String, List<Double>> locations = new HashMap<>();
 
@@ -113,8 +113,9 @@ public class ShapeFile {
                 .get(0),
                 location.getValue()
                     .get(1)));
+            SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder(CITY);
             featureBuilder.add(point);
-            featureBuilder.add(name);
+            featureBuilder.add(location.getKey());
             SimpleFeature feature = featureBuilder.buildFeature(null);
             collection.add(feature);
         }
