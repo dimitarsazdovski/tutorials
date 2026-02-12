@@ -1,0 +1,311 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #1a1a2e;
+    color: #eee;
+    font-family: 'Press Start 2P', monospace;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    image-rendering: pixelated;
+    overflow: hidden;
+}
+
+#app {
+    text-align: center;
+    width: 100%;
+    max-width: 640px;
+    padding: 20px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* ---- TITLE ---- */
+.title {
+    font-size: 28px;
+    color: #ffcc00;
+    text-shadow: 4px 4px 0 #aa6600;
+    margin-bottom: 30px;
+    animation: titlePulse 1.5s ease-in-out infinite alternate;
+    letter-spacing: 2px;
+}
+
+@keyframes titlePulse {
+    from { transform: scale(1); }
+    to { transform: scale(1.05); }
+}
+
+/* ---- KNIGHTS DISPLAY ---- */
+.knights-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+.knight-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.knight-display canvas {
+    border: 4px solid #444;
+    background: #0f0f23;
+    border-radius: 4px;
+    image-rendering: pixelated;
+}
+
+.knight-label {
+    font-size: 10px;
+    letter-spacing: 1px;
+}
+
+.vs-text {
+    font-size: 24px;
+    color: #ffcc00;
+    text-shadow: 3px 3px 0 #aa6600;
+    animation: vsPulse 0.8s ease-in-out infinite alternate;
+}
+
+@keyframes vsPulse {
+    from { transform: scale(1); opacity: 0.8; }
+    to { transform: scale(1.2); opacity: 1; }
+}
+
+.red-text { color: #ff4444; }
+.blue-text { color: #4488ff; }
+
+/* ---- CHOOSE TEXT ---- */
+.choose-text {
+    font-size: 16px;
+    color: #eee;
+    margin-bottom: 25px;
+    text-shadow: 2px 2px 0 #333;
+    animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+    50% { opacity: 0.6; }
+}
+
+/* ---- BUTTONS ---- */
+.buttons-container {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+}
+
+.btn {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 12px;
+    padding: 15px 25px;
+    border: 4px solid;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.1s;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    image-rendering: pixelated;
+}
+
+.btn:hover {
+    transform: scale(1.08);
+}
+
+.btn:active {
+    transform: scale(0.95);
+}
+
+.btn-red {
+    background: #cc2222;
+    border-color: #ff4444;
+    color: #fff;
+    box-shadow: 0 4px 0 #881111, 0 6px 8px rgba(0,0,0,0.4);
+}
+
+.btn-red:hover {
+    background: #dd3333;
+    box-shadow: 0 4px 0 #881111, 0 6px 12px rgba(255,68,68,0.3);
+}
+
+.btn-blue {
+    background: #2244aa;
+    border-color: #4488ff;
+    color: #fff;
+    box-shadow: 0 4px 0 #112266, 0 6px 8px rgba(0,0,0,0.4);
+}
+
+.btn-blue:hover {
+    background: #3355bb;
+    box-shadow: 0 4px 0 #112266, 0 6px 12px rgba(68,136,255,0.3);
+}
+
+.btn-play-again {
+    background: #228822;
+    border-color: #44cc44;
+    color: #fff;
+    box-shadow: 0 4px 0 #115511, 0 6px 8px rgba(0,0,0,0.4);
+    margin-top: 20px;
+}
+
+.btn-play-again:hover {
+    background: #33aa33;
+}
+
+/* ---- FIGHT SCREEN ---- */
+#fight-screen {
+    text-align: center;
+}
+
+#fight-screen .title {
+    font-size: 36px;
+    color: #ff4444;
+    text-shadow: 4px 4px 0 #880000;
+    animation: fightFlash 0.4s ease-in-out infinite alternate;
+}
+
+@keyframes fightFlash {
+    from { color: #ff4444; }
+    to { color: #ffcc00; }
+}
+
+#fight-canvas {
+    border: 4px solid #444;
+    background: #0a0a1a;
+    display: block;
+    margin: 10px auto;
+    image-rendering: pixelated;
+    border-radius: 4px;
+}
+
+.timer-bar-container {
+    width: 100%;
+    height: 12px;
+    background: #333;
+    border: 2px solid #555;
+    margin-bottom: 8px;
+    border-radius: 2px;
+}
+
+.timer-bar {
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(90deg, #ff4444, #ffcc00, #44cc44);
+    transition: width 0.1s linear;
+}
+
+.timer-display {
+    font-size: 14px;
+    color: #ffcc00;
+    margin-bottom: 10px;
+}
+
+.health-bars {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    margin-top: 15px;
+}
+
+.health-bar-wrapper {
+    flex: 1;
+    text-align: left;
+}
+
+.health-label {
+    font-size: 8px;
+    margin-bottom: 5px;
+}
+
+.health-bar-bg {
+    width: 100%;
+    height: 16px;
+    background: #333;
+    border: 2px solid #555;
+    border-radius: 2px;
+}
+
+.health-bar {
+    height: 100%;
+    width: 100%;
+    transition: width 0.3s ease;
+}
+
+.health-red {
+    background: linear-gradient(180deg, #ff6666, #cc2222);
+}
+
+.health-blue {
+    background: linear-gradient(180deg, #6688ff, #2244aa);
+}
+
+/* ---- RESULT SCREEN ---- */
+#result-screen {
+    text-align: center;
+}
+
+#result-canvas {
+    border: 4px solid #444;
+    background: #0a0a1a;
+    display: block;
+    margin: 0 auto 20px;
+    image-rendering: pixelated;
+    border-radius: 4px;
+}
+
+.result-text {
+    font-size: 32px;
+    margin-bottom: 15px;
+    animation: resultBounce 0.5s ease-in-out infinite alternate;
+}
+
+.result-text.win {
+    color: #44ff44;
+    text-shadow: 4px 4px 0 #117711;
+}
+
+.result-text.lose {
+    color: #ff4444;
+    text-shadow: 4px 4px 0 #881111;
+}
+
+@keyframes resultBounce {
+    from { transform: translateY(0) scale(1); }
+    to { transform: translateY(-10px) scale(1.1); }
+}
+
+.result-detail {
+    font-size: 10px;
+    color: #aaa;
+    margin-bottom: 10px;
+}
+
+/* ---- SCREEN SCANLINE OVERLAY (8-bit feel) ---- */
+body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.08) 2px,
+        rgba(0,0,0,0.08) 4px
+    );
+    z-index: 9999;
+}

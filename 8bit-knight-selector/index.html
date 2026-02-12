@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8-Bit Nostalgia</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <!-- SELECTION SCREEN -->
+        <div id="selection-screen">
+            <h1 class="title">8-Bit Nostalgia</h1>
+            <div class="knights-container">
+                <div class="knight-display">
+                    <canvas id="red-knight-preview" width="128" height="128"></canvas>
+                    <div class="knight-label red-text">Red Knight</div>
+                </div>
+                <div class="vs-text">VS</div>
+                <div class="knight-display">
+                    <canvas id="blue-knight-preview" width="128" height="128"></canvas>
+                    <div class="knight-label blue-text">Blue Knight</div>
+                </div>
+            </div>
+            <h2 class="choose-text">Choose Your Champion</h2>
+            <div class="buttons-container">
+                <button id="btn-red" class="btn btn-red" onclick="selectKnight('red')">Red Knight</button>
+                <button id="btn-blue" class="btn btn-blue" onclick="selectKnight('blue')">Blue Knight</button>
+            </div>
+        </div>
+
+        <!-- FIGHT SCREEN -->
+        <div id="fight-screen" class="hidden">
+            <h1 class="title">FIGHT!</h1>
+            <div class="timer-bar-container">
+                <div id="timer-bar" class="timer-bar"></div>
+            </div>
+            <div id="timer-display" class="timer-display">20</div>
+            <canvas id="fight-canvas" width="512" height="300"></canvas>
+            <div id="health-bars" class="health-bars">
+                <div class="health-bar-wrapper">
+                    <div class="health-label red-text">Red Knight</div>
+                    <div class="health-bar-bg">
+                        <div id="health-red" class="health-bar health-red"></div>
+                    </div>
+                </div>
+                <div class="health-bar-wrapper">
+                    <div class="health-label blue-text">Blue Knight</div>
+                    <div class="health-bar-bg">
+                        <div id="health-blue" class="health-bar health-blue"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RESULT SCREEN -->
+        <div id="result-screen" class="hidden">
+            <canvas id="result-canvas" width="512" height="300"></canvas>
+            <h1 id="result-text" class="result-text"></h1>
+            <p id="result-detail" class="result-detail"></p>
+            <button class="btn btn-play-again" onclick="resetGame()">Play Again</button>
+        </div>
+    </div>
+
+    <script src="knights.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>

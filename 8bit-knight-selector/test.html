@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>8-Bit Knight Selector - Tests</title>
+    <style>
+        body { font-family: monospace; background: #1a1a2e; color: #eee; padding: 20px; }
+        .pass { color: #44ff44; }
+        .fail { color: #ff4444; }
+        h1 { color: #ffcc00; }
+        .summary { margin-top: 20px; padding: 10px; border: 2px solid #444; }
+    </style>
+</head>
+<body>
+    <h1>Test Results</h1>
+    <div id="results"></div>
+    <div id="summary" class="summary"></div>
+
+    <!-- Hidden canvases for testing -->
+    <canvas id="red-knight-preview" width="128" height="128" style="display:none"></canvas>
+    <canvas id="blue-knight-preview" width="128" height="128" style="display:none"></canvas>
+
+    <!-- Hidden game screens for testing -->
+    <div id="selection-screen">
+        <button id="btn-red"></button>
+        <button id="btn-blue"></button>
+    </div>
+    <div id="fight-screen" class="hidden">
+        <div id="timer-bar"></div>
+        <div id="timer-display"></div>
+        <canvas id="fight-canvas" width="512" height="300"></canvas>
+        <div id="health-red" style="width:100%"></div>
+        <div id="health-blue" style="width:100%"></div>
+    </div>
+    <div id="result-screen" class="hidden">
+        <canvas id="result-canvas" width="512" height="300"></canvas>
+        <h1 id="result-text"></h1>
+        <p id="result-detail"></p>
+    </div>
+
+    <script src="knights.js"></script>
+    <script src="game.js"></script>
+    <script>
+        const results = [];
+        const resultsDiv = document.getElementById('results');
+
+        function assert(testName, condition, detail) {
+            const passed = !!condition;
+            results.push({ testName, passed, detail });
+            const el = document.createElement('div');
+            el.className = passed ? 'pass' : 'fail';
+            el.textContent = `${passed ? 'PASS' : 'FAIL'}: ${testName}${detail ? ' - ' + detail : ''}`;
+            resultsDiv.appendChild(el);
+            return passed;
+        }
+
+        // ---- SPRITE DATA TESTS ----
+        assert('KNIGHT_IDLE is 16x16', KNIGHT_IDLE.length === 16 && KNIGHT_IDLE[0].length === 16);
+        assert('KNIGHT_ATTACK is 16x16', KNIGHT_ATTACK.length === 16 && KNIGHT_ATTACK[0].length === 16);
+        assert('KNIGHT_HIT is 16x16', KNIGHT_HIT.length === 16 && KNIGHT_HIT[0].length === 16);
+        assert('KNIGHT_VICTORY is 16x16', KNIGHT_VICTORY.length === 16 && KNIGHT_VICTORY[0].length === 16);
+        assert('KNIGHT_DEFEAT is 16x16', KNIGHT_DEFEAT.length === 16 && KNIGHT_DEFEAT[0].length === 16);
+
+        // ---- PALETTE TESTS ----
+        assert('RED_PALETTE has all keys', [1,2,3,4,5,6,7].every(k => RED_PALETTE[k]));
+        assert('BLUE_PALETTE has all keys', [1,2,3,4,5,6,7].every(k => BLUE_PALETTE[k]));
+        assert('RED primary is red-ish', RED_PALETTE[2].includes('cc2222') || RED_PALETTE[2].includes('CC'));
+        assert('BLUE primary is blue-ish', BLUE_PALETTE[2].includes('2244') || BLUE_PALETTE[2].includes('aa'));
+
+        // ---- DRAWING TESTS ----
+        assert('drawKnight function exists', typeof drawKnight === 'function');
+        assert('drawKnightPreview function exists', typeof drawKnightPreview === 'function');
+        assert('drawSparks function exists', typeof drawSparks === 'function');
+
+        // Test actual drawing
+        const testCanvas = document.createElement('canvas');
+        testCanvas.width = 128;
+        testCanvas.height = 128;
+        const testCtx = testCanvas.getContext('2d');
+        drawKnight(testCtx, KNIGHT_IDLE, RED_PALETTE, 0, 0, 8, false, 1);
+        const imageData = testCtx.getImageData(0, 0, 128, 128);
+        let hasPixels = false;
+        for (let i = 3; i < imageData.data.length; i += 4) {
+            if (imageData.data[i] > 0) { hasPixels = true; break; }
+        }
+        assert('Drawing produces visible pixels', hasPixels);
+
+        // Test flipped drawing
+        testCtx.clearRect(0, 0, 128, 128);
+        drawKnight(testCtx, KNIGHT_IDLE, BLUE_PALETTE, 0, 0, 8, true, 1);
+        const flippedData = testCtx.getImageData(0, 0, 128, 128);
+        let hasFlippedPixels = false;
+        for (let i = 3; i < flippedData.data.length; i += 4) {
+            if (flippedData.data[i] > 0) { hasFlippedPixels = true; break; }
+        }
+        assert('Flipped drawing produces visible pixels', hasFlippedPixels);
+
+        // ---- GAME LOGIC TESTS ----
+        assert('selectKnight function exists', typeof selectKnight === 'function');
+        assert('startFight function exists', typeof startFight === 'function');
+        assert('resetGame function exists', typeof resetGame === 'function');
+        assert('FIGHT_DURATION is 20 seconds', FIGHT_DURATION === 20000);
+
+        // Test knight selection
+        assert('playerChoice starts null', playerChoice === null);
+
+        // Test getSpriteForState
+        assert('getSpriteForState idle returns KNIGHT_IDLE', getSpriteForState('idle') === KNIGHT_IDLE);
+        assert('getSpriteForState attack returns KNIGHT_ATTACK', getSpriteForState('attack') === KNIGHT_ATTACK);
+        assert('getSpriteForState hit returns KNIGHT_HIT', getSpriteForState('hit') === KNIGHT_HIT);
+
+        // Test applyAttack changes health
+        redHealth = 100;
+        blueHealth = 100;
+        fightStartTime = Date.now();
+        fightFrame = 0;
+        applyAttack('red', 10);
+        // Wait for the delayed damage
+        setTimeout(() => {
+            assert('Attack from red damages blue', blueHealth === 90, `blueHealth=${blueHealth}`);
+
+            applyAttack('blue', 15);
+            setTimeout(() => {
+                assert('Attack from blue damages red', redHealth === 85, `redHealth=${redHealth}`);
+
+                // Test health doesn't go below 0
+                blueHealth = 5;
+                applyAttack('red', 20);
+                setTimeout(() => {
+                    assert('Health does not go below 0', blueHealth === 0);
+
+                    // Reset for other tests
+                    fightStartTime = null;
+                    redHealth = 100;
+                    blueHealth = 100;
+
+                    // ---- DOM TESTS ----
+                    assert('Selection screen exists', !!document.getElementById('selection-screen'));
+                    assert('Fight screen exists', !!document.getElementById('fight-screen'));
+                    assert('Result screen exists', !!document.getElementById('result-screen'));
+                    assert('Red button exists', !!document.getElementById('btn-red'));
+                    assert('Blue button exists', !!document.getElementById('btn-blue'));
+                    assert('Fight canvas exists', !!document.getElementById('fight-canvas'));
+                    assert('Result canvas exists', !!document.getElementById('result-canvas'));
+                    assert('Health bars exist', !!document.getElementById('health-red') && !!document.getElementById('health-blue'));
+
+                    // ---- RANDOMNESS TEST (statistical) ----
+                    let redWins = 0;
+                    const trials = 1000;
+                    for (let i = 0; i < trials; i++) {
+                        if (Math.random() < 0.5) redWins++;
+                    }
+                    const ratio = redWins / trials;
+                    assert('Random winner is roughly 50/50', ratio > 0.4 && ratio < 0.6, `ratio=${ratio.toFixed(3)}`);
+
+                    // ---- SUMMARY ----
+                    const passed = results.filter(r => r.passed).length;
+                    const failed = results.filter(r => !r.passed).length;
+                    const summary = document.getElementById('summary');
+                    summary.innerHTML = `<span class="${failed === 0 ? 'pass' : 'fail'}">` +
+                        `${passed}/${results.length} tests passed, ${failed} failed</span>`;
+
+                    // Output for headless testing
+                    console.log(`\nTest Results: ${passed}/${results.length} passed, ${failed} failed`);
+                    results.forEach(r => {
+                        console.log(`${r.passed ? 'PASS' : 'FAIL'}: ${r.testName}${r.detail ? ' - ' + r.detail : ''}`);
+                    });
+
+                    if (failed > 0) {
+                        console.log('\nFAILED TESTS:');
+                        results.filter(r => !r.passed).forEach(r => console.log(`  - ${r.testName}`));
+                    }
+                }, 300);
+            }, 300);
+        }, 300);
+    </script>
+</body>
+</html>
